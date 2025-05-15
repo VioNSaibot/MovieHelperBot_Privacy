@@ -12,6 +12,11 @@ TMDB_API_KEY = os.getenv("TMDB_API_KEY")
 TMDB_BASE_URL = "https://api.themoviedb.org/3"
 WEBHOOK_URL = "https://moviehelperbot-privacy.onrender.com/"
 
+bot = Bot(token=TOKEN)
+
+app = Flask(__name__)
+application = ApplicationBuilder().token(TOKEN).build()
+
 GENRES = {
     "💣 Боевик": 28,
     "🤡 Комедия": 35,
@@ -181,16 +186,21 @@ async def handle_movie_search(update: Update, context: ContextTypes.DEFAULT_TYPE
         else:
             await update.message.reply_text("Жанр не распознан, попробуйте снова")
 
-def main():
+@app.post("/webhook")
+async def webhook():
+    update = Update.de_json(request.get_json(force=True), bot)
+    await application.process_update(update)
+    return "ok"
 
-        # Токен бота
-    TOKEN = os.getenv("TOKEN_BOT")
+@app.route("/")
+def index():
+    bot.set_webhook(f"{WEBHOOK_URL}/webhook")
+    return "Webhook установлее"
 
-    app = ApplicationBuilder().token(TOKEN).build()
-    app.add_handler(CommandHandler('start', start))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_movie_search))
+def setup_handlets():
+    application.add_handler(CommandHandler('start', start))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_movie_search))
 
-    app.run_polling()
-
-if __name__ == '__main__':
-    main()
+if __name__ == "__main__":
+    setup_handlers()
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
