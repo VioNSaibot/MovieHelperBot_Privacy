@@ -208,7 +208,7 @@ def home():
 
 def setup():
     application.add_handler(CommandHandler("start", start))
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_movie_search))
 
 async def on_startup():
     await bot.set_webhook(f"{WEBHOOK_URL}/webhook")
