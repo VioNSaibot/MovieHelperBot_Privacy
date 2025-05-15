@@ -190,15 +190,14 @@ async def handle_movie_search(update: Update, context: ContextTypes.DEFAULT_TYPE
             await update.message.reply_text("Жанр не распознан, попробуйте снова")
 
 @app.post("/webhook")
-def webhook():
+async def webhook():
     update = Update.de_json(request.get_json(force=True), bot)
-    asyncio.run(application.process_update(update))
+    await application.process_update(update)
     return "ok"
 
 @app.route("/")
 def index():
-    bot.set_webhook(f"{WEBHOOK_URL}/webhook")
-    return "Webhook установлее"
+    return "Бот работает!"
 
 def setup_handlers():
     application.add_handler(CommandHandler('start', start))
@@ -206,4 +205,5 @@ def setup_handlers():
 
 if __name__ == "__main__":
     setup_handlers()
+    bot.set_webhook(f"{WEBHOOK_URL}/webhook")
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
