@@ -189,24 +189,34 @@ async def handle_movie_search(update: Update, context: ContextTypes.DEFAULT_TYPE
         else:
             await update.message.reply_text("Жанр не распознан, попробуйте снова")
 
-async def set_bot_webhook():
-    await bot.set_webhook(f"{WEBHOOK_URL}/webhook")
-
 @app.route("/webhook", methods=["POST"])
-def webhook():
-    update = Update.de_json(request.get_json(force=True), bot)
-    asyncio.run(application.process_update(update))
-    return "ok"
+async def webhook():
+    try:
+        data = request.get_json(force=True)
+        update = Update.de_json(data, bot)
+        await application.process_update(update)
+        return "ok"
+    except Exception as e:
+        print("Webhook error:", e)
+        return "error", 500
 
-@app.route("/")
-def index():
-    return "Бот работает!"
+@app.route("/", methods=["GET"])
+def home():
+    return "Бот работает через вебхук! ✅"
 
-def setup_handlers():
-    application.add_handler(CommandHandler('start', start))
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_movie_search))
+# --- Установка хендлеров и webhook
 
-if __name__ == "__main__":
-    setup_handlers()
-    asyncio.run(set_bot_webhook())
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+def setup():
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
+
+async def on_startup():
+    await bot.set_webhook(f"{WEBHOOK_URL}/webhook")
+    print("Webhook установлен!")
+
+def run():
+    setup()
+    asyncio.get_event_loop().run_until_complete(on_startup())
+    # не app.run! gunicorn возьмет app сам
+
+run()
