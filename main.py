@@ -8,6 +8,7 @@ from telegram import ReplyKeyboardMarkup, KeyboardButton
 
 load_dotenv()
 
+TOKEN = os.getenv("TOKEN_BOT")
 TMDB_API_KEY = os.getenv("TMDB_API_KEY")
 TMDB_BASE_URL = "https://api.themoviedb.org/3"
 WEBHOOK_URL = "https://moviehelperbot-privacy.onrender.com/"
