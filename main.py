@@ -1,11 +1,12 @@
 import requests
 import os
 import random
+import asyncio
 from telegram import Update, Bot
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, MessageHandler, filters
 from dotenv import load_dotenv
 from telegram import ReplyKeyboardMarkup, KeyboardButton
-from flask import Flask
+from flask import Flask, request
 
 load_dotenv()
 
@@ -189,17 +190,16 @@ async def handle_movie_search(update: Update, context: ContextTypes.DEFAULT_TYPE
             await update.message.reply_text("Жанр не распознан, попробуйте снова")
 
 @app.post("/webhook")
-async def webhook():
+def webhook():
     update = Update.de_json(request.get_json(force=True), bot)
-    await application.process_update(update)
+    asyncio.run(application.process_update(update))
     return "ok"
 
 @app.route("/")
 def index():
-    bot.set_webhook(f"{WEBHOOK_URL}/webhook")
-    return "Webhook установлее"
+    return "Бот запущен"
 
-def setup_handlets():
+def setup_handlers():
     application.add_handler(CommandHandler('start', start))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_movie_search))
 
