@@ -217,6 +217,8 @@ async def on_startup():
 def run():
     setup()
     asyncio.get_event_loop().run_until_complete(on_startup())
-    # не app.run! gunicorn возьмет app сам
+    if __name__ == "__main__":
+        port = int(os.environ.get("PORT", 5000))
+        app.run(host="0.0.0.0", port=port
 
 run()
