@@ -192,10 +192,10 @@ async def handle_movie_search(update: Update, context: ContextTypes.DEFAULT_TYPE
 async def set_bot_webhook():
     await bot.set_webhook(f"{WEBHOOK_URL}/webhook")
 
-@app.post("/webhook")
-async def webhook():
+@app.route("/webhook", methods=["POST"])
+def webhook():
     update = Update.de_json(request.get_json(force=True), bot)
-    await application.process_update(update)
+    asyncio.run(application.process_update(update))
     return "ok"
 
 @app.route("/")
