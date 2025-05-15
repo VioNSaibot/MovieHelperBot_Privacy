@@ -1,7 +1,7 @@
 import requests
 import os
 import random
-from telegram import Update
+from telegram import Update, Bot
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, MessageHandler, filters
 from dotenv import load_dotenv
 from telegram import ReplyKeyboardMarkup, KeyboardButton
