@@ -13,7 +13,7 @@ load_dotenv()
 TOKEN = os.getenv("TOKEN_BOT")
 TMDB_API_KEY = os.getenv("TMDB_API_KEY")
 TMDB_BASE_URL = "https://api.themoviedb.org/3"
-WEBHOOK_URL = "https://moviehelperbot-privacy.onrender.com/"
+WEBHOOK_URL = "https://moviehelperbot-privacy.onrender.com"
 
 bot = Bot(token=TOKEN)
 
@@ -197,7 +197,8 @@ def webhook():
 
 @app.route("/")
 def index():
-    return "Бот запущен"
+    bot.set_webhook(f"{WEBHOOK_URL}/webhook")
+    return "Webhook установлее"
 
 def setup_handlers():
     application.add_handler(CommandHandler('start', start))
